@@ -5,47 +5,45 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class ChatPanel extends JPanel {
+    private String contactName;
     private JTextArea chatArea;
     private JTextField messageField;
     private JButton sendButton;
     private JLabel contactLabel;
     
-    public ChatPanel() {
+    public ChatPanel(String contactName) {
+        this.contactName = contactName;
         initComponents();
         setupLayout();
         setupListeners();
         Design.stylePanel(this);
+        loadInitialMessages();
     }
     
     private void initComponents() {
-        // Метка текущего контакта
-        contactLabel = new JLabel("Выберите собеседника");
+        // Метка с именем контакта
+        contactLabel = new JLabel("Чат с: " + contactName);
         Design.styleHeaderLabel(contactLabel);
         
         // Область чата
         chatArea = new JTextArea();
         chatArea.setEditable(false);
         Design.styleTextArea(chatArea);
-        chatArea.append("Добро пожаловать в бордовый мессенджер!\n");
-        chatArea.append("Выберите собеседника из списка контактов.\n");
-        chatArea.append("----------------------------------------\n");
         
         // Поле ввода сообщения
         messageField = new JTextField();
         Design.styleTextField(messageField);
-        messageField.setEnabled(false);
         
         // Кнопка отправки
         sendButton = new JButton("Отправить");
         Design.styleButton(sendButton);
-        sendButton.setEnabled(false);
     }
     
     private void setupLayout() {
         setLayout(new BorderLayout(0, 10));
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         
-        // Заголовок с именем контакта
+        // Заголовок
         JPanel headerPanel = new JPanel(new BorderLayout());
         Design.stylePanel(headerPanel);
         headerPanel.add(contactLabel, BorderLayout.CENTER);
@@ -60,7 +58,7 @@ public class ChatPanel extends JPanel {
         Design.stylePanel(chatContainer);
         chatContainer.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(Design.DARK_BORDEAUX, 1),
-            "Сообщения",
+            "История сообщений",
             TitledBorder.LEFT,
             TitledBorder.TOP,
             new Font("Segoe UI", Font.PLAIN, 12),
@@ -92,22 +90,115 @@ public class ChatPanel extends JPanel {
         });
     }
     
+    private void loadInitialMessages() {
+        String welcomeMessage = String.format(
+            "Добро пожаловать в чат с %s!\n%s\n",
+            contactName,
+            "--------------------------------------------------"
+        );
+        chatArea.append(welcomeMessage);
+        
+        // Добавляем несколько примеров сообщений для реалистичности
+        if (contactName.equals("Алексей Петров")) {
+            chatArea.append("\n[Алексей Петров] 10:30:\nПривет! Как дела?\n");
+            chatArea.append("\n[Вы] 10:32:\nПривет! Всё отлично, спасибо!\n");
+        } else if (contactName.equals("Мария Иванова")) {
+            chatArea.append("\n[Мария Иванова] Вчера, 15:45:\nГотовы к встрече завтра?\n");
+            chatArea.append("\n[Вы] Вчера, 16:20:\nДа, конечно! В 14:00?\n");
+        }
+    }
+    
     private void sendMessage() {
         String message = messageField.getText().trim();
         if (!message.isEmpty()) {
             String timestamp = java.time.LocalTime.now().format(
                 java.time.format.DateTimeFormatter.ofPattern("HH:mm")
             );
-            chatArea.append("\n[Вы] " + timestamp + ":\n" + message + "\n");
+            
+            // Добавляем сообщение в историю
+            addMessage(message, true);
+            
+            // Симулируем ответ через 1-3 секунды
+            simulateResponse(message);
+            
             messageField.setText("");
-            chatArea.setCaretPosition(chatArea.getDocument().getLength());
+            messageField.requestFocus();
         }
     }
     
-    public void setContactName(String contactName) {
-        contactLabel.setText("Чат с: " + contactName.split("\\(")[0].trim());
-        messageField.setEnabled(true);
-        sendButton.setEnabled(true);
-        chatArea.append("\n--- Начат чат с " + contactName + " ---\n");
+    public void addMessage(String message, boolean isMyMessage) {
+        String timestamp = java.time.LocalTime.now().format(
+            java.time.format.DateTimeFormatter.ofPattern("HH:mm")
+        );
+        
+        String prefix = isMyMessage ? "[Вы]" : "[" + contactName + "]";
+        String formattedMessage = String.format("\n%s %s:\n%s\n", 
+            prefix, timestamp, message);
+        
+        SwingUtilities.invokeLater(() -> {
+            chatArea.append(formattedMessage);
+            chatArea.setCaretPosition(chatArea.getDocument().getLength());
+            
+            // Звуковое уведомление для входящих сообщений
+            if (!isMyMessage) {
+                Toolkit.getDefaultToolkit().beep();
+            }
+        });
+    }
+    
+    private void simulateResponse(String myMessage) {
+        // Симуляция ответа собеседника через случайную задержку
+        new Thread(() -> {
+            try {
+                // Случайная задержка 1-3 секунды
+                Thread.sleep(1000 + (int)(Math.random() * 2000));
+                
+                // Генерация ответа на основе введенного сообщения
+                String response = generateResponse(myMessage);
+                
+                SwingUtilities.invokeLater(() -> {
+                    addMessage(response, false);
+                });
+                
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+    
+    private String generateResponse(String myMessage) {
+        // Простая логика генерации ответов
+        String lowerMessage = myMessage.toLowerCase();
+        
+        if (lowerMessage.contains("привет") || lowerMessage.contains("здравствуй")) {
+            return "Привет! Как дела?";
+        } else if (lowerMessage.contains("как дела")) {
+            return "Всё отлично, спасибо! А у тебя?";
+        } else if (lowerMessage.contains("пока") || lowerMessage.contains("до свидания")) {
+            return "До встречи! Было приятно пообщаться.";
+        } else if (lowerMessage.contains("?")) {
+            return "Интересный вопрос! Дай мне подумать...";
+        } else if (lowerMessage.length() < 10) {
+            return "Коротко, но ясно :)";
+        } else {
+            // Случайный ответ из набора
+            String[] responses = {
+                "Понятно, продолжайте.",
+                "Интересно! Расскажите подробнее.",
+                "Согласен с вами.",
+                "Хм, нужно подумать над этим.",
+                "Спасибо за информацию!",
+                "Как интересно!",
+                "Это действительно важно.",
+                "Продолжайте в том же духе!",
+                "Я вас понимаю.",
+                "Отличная мысль!"
+            };
+            return responses[(int)(Math.random() * responses.length)];
+        }
+    }
+    
+    public String getContactName() {
+        return contactName;
     }
 }
