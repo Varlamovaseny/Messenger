@@ -1,5 +1,15 @@
 import java.awt.*;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
 public class Design {
     public static final Color PRIMARY_BACKGROUND = new Color(30, 0, 10);
     public static final Color SECONDARY_BACKGROUND = new Color(40, 5, 15);

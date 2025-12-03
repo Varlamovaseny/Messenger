@@ -47,7 +47,6 @@ public class ChatContainerPanel extends JPanel {
         tabbedPane.setBackground(Design.PRIMARY_BACKGROUND);
         tabbedPane.setForeground(Design.TEXT_PRIMARY);
         
-        // Стилизация вкладок
         tabbedPane.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         
         // Кнопка закрытия на каждой вкладке
@@ -55,7 +54,6 @@ public class ChatContainerPanel extends JPanel {
     }
     
     public void showChatForContact(String contactName) {
-        // Убираем пустое состояние
         remove(emptyStateLabel);
         if (tabbedPane.getParent() != this) {
             add(tabbedPane, BorderLayout.CENTER);
@@ -134,7 +132,6 @@ public class ChatContainerPanel extends JPanel {
         }
         
         if (tabIndex != -1) {
-            // Удаляем вкладку
             tabbedPane.remove(tabIndex);
             chatPanels.remove(contactName);
             
@@ -173,15 +170,12 @@ public class ChatContainerPanel extends JPanel {
             g2d.setColor(Design.ACCENT_COLOR);
             g2d.setStroke(new BasicStroke(2));
             
-            // Контур облачка
             g2d.drawRoundRect(x + 10, y + 5, SIZE - 20, SIZE - 25, 15, 15);
             
-            // Хвостик облачка
             int[] xPoints = {x + 20, x + 30, x + 25};
             int[] yPoints = {y + SIZE - 20, y + SIZE - 20, y + SIZE - 10};
             g2d.drawPolyline(xPoints, yPoints, 3);
             
-            // Три точки
             g2d.fillOval(x + 20, y + 15, 8, 8);
             g2d.fillOval(x + 35, y + 15, 8, 8);
             g2d.fillOval(x + 50, y + 15, 8, 8);

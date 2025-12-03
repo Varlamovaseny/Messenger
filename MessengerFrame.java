@@ -2,8 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MessengerFrame extends JFrame {
-    private ChatPanel chatPanel;
     private ContactsPanel contactsPanel;
+    private ChatContainerPanel chatContainerPanel;
+    private JSplitPane splitPane;
     
     public MessengerFrame() {
         setupFrame();
@@ -14,7 +15,7 @@ public class MessengerFrame extends JFrame {
     }
     
     private void setupFrame() {
-        setTitle("Бордовый Мессенджер");
+        setTitle("Мессенджер");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(900, 600));
         setMinimumSize(new Dimension(800, 500));
@@ -22,22 +23,30 @@ public class MessengerFrame extends JFrame {
     }
     
     private void initComponents() {
-        chatPanel = new ChatPanel();
-        contactsPanel = new ContactsPanel(chatPanel);
+        chatContainerPanel = new ChatContainerPanel();
+        contactsPanel = new ContactsPanel(chatContainerPanel);
     }
     
     private void layoutComponents() {
         setLayout(new BorderLayout());
         
-        JSplitPane splitPane = new JSplitPane(
+        splitPane = new JSplitPane(
             JSplitPane.HORIZONTAL_SPLIT,
             contactsPanel,
-            chatPanel
+            chatContainerPanel
         );
         splitPane.setDividerLocation(300);
         splitPane.setResizeWeight(0.3);
+        splitPane.setDividerSize(5);
+        splitPane.setBackground(Design.PRIMARY_BACKGROUND);
+        splitPane.setBorder(BorderFactory.createEmptyBorder());
         
         add(splitPane, BorderLayout.CENTER);
         pack();
+    }
+    
+    // Метод для обновления чата
+    public void updateChatForContact(String contactName) {
+        chatContainerPanel.showChatForContact(contactName);
     }
 }
