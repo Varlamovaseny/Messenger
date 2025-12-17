@@ -56,13 +56,14 @@ public class ChatPanel extends JPanel {
         
         JPanel chatContainer = new JPanel(new BorderLayout());
         Design.stylePanel(chatContainer);
+        // Используем бирюзовый цвет из нового дизайна
         chatContainer.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Design.DARK_BORDEAUX, 1),
+            BorderFactory.createLineBorder(Design.TURQUOISE, 2), // Бирюзовая рамка
             "История сообщений",
             TitledBorder.LEFT,
             TitledBorder.TOP,
             new Font("Segoe UI", Font.PLAIN, 12),
-            Design.TEXT_SECONDARY
+            Design.TEXT_PRIMARY // Используем основной цвет текста
         ));
         chatContainer.add(chatScrollPane, BorderLayout.CENTER);
         
@@ -111,14 +112,8 @@ public class ChatPanel extends JPanel {
     private void sendMessage() {
         String message = messageField.getText().trim();
         if (!message.isEmpty()) {
-            String timestamp = java.time.LocalTime.now().format(
-                java.time.format.DateTimeFormatter.ofPattern("HH:mm")
-            );
-            
-            // Добавляем сообщение в историю
             addMessage(message, true);
             
-            // Симулируем ответ через 1-3 секунды
             simulateResponse(message);
             
             messageField.setText("");
@@ -139,7 +134,6 @@ public class ChatPanel extends JPanel {
             chatArea.append(formattedMessage);
             chatArea.setCaretPosition(chatArea.getDocument().getLength());
             
-            // Звуковое уведомление для входящих сообщений
             if (!isMyMessage) {
                 Toolkit.getDefaultToolkit().beep();
             }
@@ -147,13 +141,10 @@ public class ChatPanel extends JPanel {
     }
     
     private void simulateResponse(String myMessage) {
-        // Симуляция ответа собеседника через случайную задержку
         new Thread(() -> {
             try {
-                // Случайная задержка 1-3 секунды
                 Thread.sleep(1000 + (int)(Math.random() * 2000));
                 
-                // Генерация ответа на основе введенного сообщения
                 String response = generateResponse(myMessage);
                 
                 SwingUtilities.invokeLater(() -> {

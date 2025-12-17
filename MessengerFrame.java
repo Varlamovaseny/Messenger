@@ -37,15 +37,17 @@ public class MessengerFrame extends JFrame {
         );
         splitPane.setDividerLocation(300);
         splitPane.setResizeWeight(0.3);
-        splitPane.setDividerSize(5);
-        splitPane.setBackground(Design.PRIMARY_BACKGROUND);
+        splitPane.setDividerSize(8);
+        splitPane.setBackground(Design.PRIMARY_PINK); // Используем розовый цвет
         splitPane.setBorder(BorderFactory.createEmptyBorder());
+        
+        splitPane.getLeftComponent().setBackground(Design.PRIMARY_PINK);
+        splitPane.getRightComponent().setBackground(Design.PRIMARY_PINK);
         
         add(splitPane, BorderLayout.CENTER);
         pack();
     }
     
-    // Метод для обновления чата
     public void updateChatForContact(String contactName) {
         chatContainerPanel.showChatForContact(contactName);
     }
